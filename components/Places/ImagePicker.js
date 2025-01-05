@@ -7,6 +7,7 @@ import {
 import { useState } from "react";
 
 import { Colors } from "../../constants/Colors";
+import OutlinedButton from "../UI/OutlinedButton";
 
 function ImagePicker() {
   const [pickedImage, setPickedImage] = useState();
@@ -59,7 +60,7 @@ function ImagePicker() {
   return (
     <View>
       <View style={styles.imagePreview}>{imagePreview}</View>
-      <Button title="Take Image" onPress={takeImageHandler} />
+      <OutlinedButton icon="camera" onPress={takeImageHandler}>Take Image</OutlinedButton>
     </View>
   );
 }
@@ -79,5 +80,6 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+    overflow :"hidden"
   },
 });
