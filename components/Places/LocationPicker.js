@@ -8,14 +8,14 @@ import {
 import { Colors } from "../../constants/Colors";
 
 import OutlinedButton from "../UI/OutlinedButton";
-import { getMapPreview } from "../../util/location";
+import { getAddressAsync, getMapPreview } from "../../util/location";
 import {
   useNavigation,
   useRoute,
   useIsFocused,
 } from "@react-navigation/native";
 
-function LocationPicker() {
+function LocationPicker({ onPickLocation }) {
   const navigation = useNavigation();
   const route = useRoute();
   const isFocused = useIsFocused();
@@ -32,6 +32,17 @@ function LocationPicker() {
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]);
+
+  useEffect(() => {
+    async function handleLocation() {
+      if (pickedLocation) {
+        const address = await getAddressAsync(pickedLocation.lat, pickedLocation.lng);
+        onPickLocation({ ...pickedLocation, address: address });
+      }
+    }
+
+    handleLocation();
+  }, [pickedLocation, onPickLocation]);
 
   async function verifyPermissions() {
     if (
@@ -61,7 +72,6 @@ function LocationPicker() {
     }
 
     const location = await getCurrentPositionAsync();
-    console.log(location);
     setPickedLocation({
       lat: location.coords.latitude,
       lng: location.coords.longitude,
@@ -75,12 +85,8 @@ function LocationPicker() {
   let locationPreview = <Text>No location chosen yet.</Text>;
   if (pickedLocation) {
     const url = getMapPreview(pickedLocation.lat, pickedLocation.lng);
-    console.log(url);
     locationPreview = (
-      <Image
-        style={styles.mapPreviewImg}
-        source={{ uri: url }}
-      />
+      <Image style={styles.mapPreviewImg} source={{ uri: url }} />
     );
   }
 

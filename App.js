@@ -7,11 +7,34 @@ import AddPlace from "./screens/AddPlace";
 import IconButton from "./components/UI/IconButton";
 import { Colors } from "./constants/Colors";
 import Map from "./screens/Map";
-
+import { useEffect, useState } from "react";
+import { init } from "./util/database";
+import * as SplashScreen from "expo-splash-screen";
+import PlaceDetails from "./screens/PlaceDetails";
 
 const Stack = createNativeStackNavigator();
 
+// // // Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+  init()
+    .then(() => {
+      setAppIsReady(true);
+      SplashScreen.hideAsync();
+      console.log("Database initialized successfully!");
+    })
+    .catch((error) => {
+      console.error("Failed to initialize database:", error);
+    });
+
+  if (!appIsReady) {
+    console.log("App is not ready yet!");
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <>
       <StatusBar style="dark" />
@@ -43,11 +66,8 @@ export default function App() {
             component={AddPlace}
             options={{ title: "Add a New Place" }}
           />
-          <Stack.Screen
-            name="Map"
-            component={Map}
-            options={{ title: "Map" }}
-          />
+          <Stack.Screen name="Map" component={Map} options={{ title: "Map" }} />
+          <Stack.Screen name="PlaceDetails" component={PlaceDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
